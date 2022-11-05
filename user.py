@@ -25,3 +25,7 @@ class User:
     def stocks(self):
         return self.__stocks
 
+    @property
+    def password(self):
+        return self.__password
+

@@ -11,6 +11,7 @@ class Stock:
         self.__name = self.__soup.find('h1', class_='D(ib) Fz(18px)').text
         self.__price = float(self.__soup.find('fin-streamer', class_='Fw(b) Fz(36px) Mb(-4px) D(ib)').text)
         self.__price_change = float(self.__soup.find('fin-streamer', class_='Fw(500) Pstart(8px) Fz(24px)')["value"])
+        self.__info = self.__soup.find("p", class_="businessSummary Mt(10px) Ov(h) Tov(e)").text.split(" ")
 
     @property
     def name(self):
@@ -24,18 +25,15 @@ class Stock:
     def price_change(self):
         return float(self.__price_change)
 
-    @property
-    def detail(self):
-        lst = self.__soup.find("p", class_="businessSummary Mt(10px) Ov(h) Tov(e)").text.split(" ")
+    def info(self):
         lst2 = []
-        for i in range(len(lst)):
+        for i in range(len(self.__info)):
             if i % 10 == 0:
-                lst2.append(" ".join(lst[i:i + 10]))
-        return "\n".join(lst2)
-
-    def __str__(self):
-        return f"{self.name}\n"f"Stock Current Price is: " + f"{self.price:.2f}\n" \
-               + f"Stock Price Change is: " + f"{self.price_change:.2f}\n" + f"{self.detail}"
+                lst2.append(" ".join(self.__info[i:i + 10]))
+        print("\n".join(lst2))
+    # def __str__(self):
+    #     return f"{self.name}\n"f"Stock Current Price is: " + f"{self.price:.2f}\n" \
+    #            + f"Stock Price Change is: " + f"{self.price_change:.2f}\n" + f"{self.detail}"
 
 
 # print(ParsePrice())
@@ -43,7 +41,7 @@ class Stock:
 #     print('Stock Current Price is: ' + f"{float(ParsePrice()[0]):.2f}")
 #     print('Stock Price Change is: ' + f"{float(ParsePrice()[1]):.2f}")
 
-# x = Stock("")
+# x = Stock("AAPL")
 # print(x.name)
 # print(x.price)
 # print(x.price_change)
