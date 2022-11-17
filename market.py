@@ -9,12 +9,15 @@ class Market:
 
     def buy(self, ticker, quantity=1):
         stock = Stock(ticker)
-        if int(self.user.money) < int(stock.price) * int(quantity):
-            print("You don't have enough money to buy this stock!")
-        elif self.user.money >= stock.price * int(quantity):
-            self.user.money -= (stock.price * quantity)
-            self.user.stocks[ticker] = quantity
-            print("You have bought " + str(quantity) + " of " + ticker)
+        if stock.have_ticker():
+            if int(self.user.money) < int(stock.price) * int(quantity):
+                print("You don't have enough money to buy this stock!")
+            elif self.user.money >= stock.price * int(quantity):
+                self.user.money -= (stock.price * quantity)
+                self.user.stocks[ticker] = quantity
+                print("You have bought " + str(quantity) + " of " + ticker)
+        else:
+            print("No ticker stock found!")
 
     def sell(self, ticker, quantity=1):
         stock = Stock(ticker)
@@ -40,4 +43,4 @@ class Market:
             print("You don't own any stocks!")
         else:
             for ticker, quantity in self.user.stocks.items():
-                print(f"{ticker}: {quantity}")
+                print(f"{ticker}: {quantity}, Price: {Stock(ticker).price}")

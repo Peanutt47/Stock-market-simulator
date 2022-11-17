@@ -8,10 +8,31 @@ class Stock:
         url = f'https://finance.yahoo.com/quote/{self.ticker}?p={self.ticker}'
         page = requests.get(url)
         self.__soup = BeautifulSoup(page.text, 'lxml')
-        self.__name = self.__soup.find('h1', class_='D(ib) Fz(18px)').text
-        self.__price = float(self.__soup.find('fin-streamer', class_='Fw(b) Fz(36px) Mb(-4px) D(ib)').text)
-        self.__price_change = float(self.__soup.find('fin-streamer', class_='Fw(500) Pstart(8px) Fz(24px)')["value"])
-        self.__info = self.__soup.find("p", class_="businessSummary Mt(10px) Ov(h) Tov(e)").text.split(" ")
+        self.__name = None
+        self.__price = None
+        self.__price_change = None
+        self.__info = None
+        if self.have_ticker():
+            self.__name = self.__soup.find('h1', class_='D(ib) Fz(18px)').text
+            self.__price = float(self.__soup.find('fin-streamer', class_='Fw(b) Fz(36px) Mb(-4px) D(ib)').text)
+            self.__price_change = float(self.__soup.find('fin-streamer', class_='Fw(500) Pstart(8px) Fz(24px)')["value"])
+            self.__info = self.__soup.find("p", class_="businessSummary Mt(10px) Ov(h) Tov(e)").text.split(" ")
+        # self.__name = self.__soup.find('h1', class_='D(ib) Fz(18px)').text
+        # self.__price = float(self.__soup.find('fin-streamer', class_='Fw(b) Fz(36px) Mb(-4px) D(ib)').text)
+        # self.__price_change = float(self.__soup.find('fin-streamer', class_='Fw(500) Pstart(8px) Fz(24px)')["value"])
+        # self.__info = self.__soup.find("p", class_="businessSummary Mt(10px) Ov(h) Tov(e)").text.split(" ")
+
+    def have_ticker(self):
+        try:
+            self.__name = self.__soup.find('h1', class_='D(ib) Fz(18px)').text
+        except AttributeError:
+            return False
+        else:
+            self.__price = float(self.__soup.find('fin-streamer', class_='Fw(b) Fz(36px) Mb(-4px) D(ib)').text)
+            self.__price_change = float(
+                self.__soup.find('fin-streamer', class_='Fw(500) Pstart(8px) Fz(24px)')["value"])
+            self.__info = self.__soup.find("p", class_="businessSummary Mt(10px) Ov(h) Tov(e)").text.split(" ")
+            return True
 
     @property
     def name(self):
@@ -35,20 +56,19 @@ class Stock:
     #     return f"{self.name}\n"f"Stock Current Price is: " + f"{self.price:.2f}\n" \
     #            + f"Stock Price Change is: " + f"{self.price_change:.2f}\n" + f"{self.detail}"
 
-
 # print(ParsePrice())
 # while True:
 #     print('Stock Current Price is: ' + f"{float(ParsePrice()[0]):.2f}")
 #     print('Stock Price Change is: ' + f"{float(ParsePrice()[1]):.2f}")
 
-# x = Stock("AAPL")
+# x = Stock("BTC-USD")
 # print(x.name)
 # print(x.price)
 # print(x.price_change)
 # print(x.detail)
-# url = 'https://finance.yahoo.com/quote/AAPL?p=AAPL'
-# page = requests.get(url)
-# soup = BeautifulSoup(page.text, 'lxml')
-# name = soup.find('h1', class_='D(ib) Fz(18px)').text
-# print(name)
+url = 'https://finance.yahoo.com/quote/BTC-USD?p=BTC-USD'
+page = requests.get(url)
+soup = BeautifulSoup(page.text, 'lxml')
+name = soup.findAll('div', class_="D(ib) Mend(20px)")
+print(name)
 # print(Stock(input("Enter : ")))

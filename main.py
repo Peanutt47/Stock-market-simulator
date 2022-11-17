@@ -35,7 +35,7 @@ def login():
             login()
     elif username == "Q":
         main()
-    else:
+    elif username not in user_data.username:
         print("Username does not exist!")
         login()
 
@@ -72,7 +72,6 @@ def trade_menu():
         trade_menu()
     elif choice == "5":
         main()
-
 
 
 def main():
