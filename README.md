@@ -1,2 +1,2 @@
-# project-final-Year1-term1
+# Stock-market-simulator
 stock market
