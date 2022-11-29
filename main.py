@@ -72,7 +72,7 @@ def login():
         if username in user_data:
             if user_data[username]["password"] == password:
                 print("Login successful!")
-                market = Market(user_data[username])
+                market = Market(User(username, password, user_data[username]["money"])) #error
                 trade_menu()
             else:
                 print("Incorrect password!")
@@ -82,7 +82,7 @@ def login():
             login()
 
 
-def trading_tickers():
+def trending_tickers():
     url = "https://finance.yahoo.com/lookup"
     r = requests.get(url)
     soup = BeautifulSoup(r.text, "html.parser")
@@ -146,7 +146,7 @@ def trade_menu():
             market.view_portfolio()
         trade_menu()
     elif choice == "3":
-        trading_tickers()
+        trending_tickers()
         trade_menu()
     elif choice == "4":
         market.view_portfolio()
