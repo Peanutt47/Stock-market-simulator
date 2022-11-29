@@ -1,8 +1,11 @@
+import json
+
+
 class User:
     def __init__(self, username, password, money=10000):
-        self.__money = money
-        self.__username = username
-        self.__password = password
+        self.money = money
+        self.username = username
+        self.password = password
         self.__stocks = {}
 
     @property
@@ -29,3 +32,31 @@ class User:
     def password(self):
         return self.__password
 
+    @password.setter
+    def password(self, other):
+        if not isinstance(other, str):
+            return "password must be string"
+        else:
+            self.__password = other
+
+    def create_account(self):
+        if len(self.__password) >= 8 and not self.__password.isnumeric():
+            new_account = {
+                self.username: {
+                    "password": self.password,
+                    "money": self.money,
+                    "stocks": self.__stocks
+                }
+            }
+            try:
+                with open("user_data.json", "r") as user_flie:
+                    user_data = json.load(user_flie)
+            except FileNotFoundError:
+                with open("user_data.json", "w") as user_flie:
+                    json.dump(new_account, user_flie, indent=4)
+            else:
+                user_data.update(new_account)
+                with open("user_data.json", "w") as user_flie:
+                    json.dump(user_data, user_flie, indent=4)
+        else:
+            print("password must be 8 characters or more and not only numbers")

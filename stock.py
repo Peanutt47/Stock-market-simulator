@@ -5,7 +5,7 @@ import requests
 class Stock:
     def __init__(self, ticker):
         self.ticker = ticker
-        url = f'https://finance.yahoo.com/quote/{self.ticker}?p={self.ticker}'
+        url = f'https://finance.yahoo.com/quote/{ticker}?p={ticker}'
         page = requests.get(url)
         self.__soup = BeautifulSoup(page.text, 'lxml')
         self.__name = None
@@ -56,19 +56,26 @@ class Stock:
     #     return f"{self.name}\n"f"Stock Current Price is: " + f"{self.price:.2f}\n" \
     #            + f"Stock Price Change is: " + f"{self.price_change:.2f}\n" + f"{self.detail}"
 
-# print(ParsePrice())
-# while True:
-#     print('Stock Current Price is: ' + f"{float(ParsePrice()[0]):.2f}")
-#     print('Stock Price Change is: ' + f"{float(ParsePrice()[1]):.2f}")
 
-# x = Stock("BTC-USD")
-# print(x.name)
-# print(x.price)
-# print(x.price_change)
-# print(x.detail)
-url = 'https://finance.yahoo.com/quote/BTC-USD?p=BTC-USD'
-page = requests.get(url)
-soup = BeautifulSoup(page.text, 'lxml')
-name = soup.findAll('div', class_="D(ib) Mend(20px)")
-print(name)
-# print(Stock(input("Enter : ")))
+# import time
+#
+# from settrade_v2 import Investor
+#
+# investor = Investor(
+#                 app_id="9HCH2mlwPzy81nSz",
+#                 app_secret="AOvWCOarao7STFT+Acfr0EnCNHo9hAC2Xd8US+s/e1Dc",
+#                 broker_id="SANDBOX",
+#                 app_code="SANDBOX",
+#                 is_auto_queue=False)
+# realtime = investor.RealtimeDataConnection()
+#
+# def my_message(result):
+#     print(result)
+#
+# sub = realtime.subscribe_price_info("AOT", on_message = my_message)
+# sub.start()
+# # run main thread forever
+# while True:
+#     time.sleep(1)
+# print("End")
+# print(Stock("TSLA").price_change)

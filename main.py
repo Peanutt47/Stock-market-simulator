@@ -1,9 +1,20 @@
 from user import User
 from market import Market
 from stock import Stock
+import json
+from bs4 import BeautifulSoup
+import requests
+
+url = "https://finance.yahoo.com/lookup"
+r = requests.get(url)
+soup = BeautifulSoup(r.text, "html.parser")
+x = soup.findAll("td", {"class": "data-col0 Ta(start) Pstart(6px) Pend(15px)"})
+# for i in range(len(x)):
+#     print(i + 1, x[i].text)
+open("Trending Tickers.txt", "w").write("\n".join([i.text for i in x]))
 
 user_data = User("admin", "12345", 10000)
-Market = Market(user_data)
+market = Market(user_data)
 
 
 def create_account():
@@ -12,38 +23,77 @@ def create_account():
     username = input("Enter your username or (Q)uit: ")
     password = input("Enter your password: ")
     money = input("Enter your money: ")
-    if username != user_data.username:
-        user_data = User(username, password, money)
-    elif username == "Q":
+    if username.lower() == "quit" or username.lower() == "q":
         main()
-    elif username == user_data.username:
-        print("Username already exists")
-        create_account()
-    print("Account created successfully!")
+    try:
+        with open("user_data.json", "r") as user_flie:
+            user_data = json.load(user_flie)
+    except FileNotFoundError:
+        User(username, password, money).create_account()
+        main()
+    else:
+        if username in user_data:
+            print("Username already exists!")
+            create_account()
+        else:
+            User(username, password, money).create_account()
+            print("Account registered!")
+            main()
+    # if username != user_data.username:
+    #     user_data = User(username, password, money)
+    # elif username == "Q":
+    #     main()
+    # elif username == user_data.username:
+    #     print("Username already exists")
+    #     create_account()
+    # print("Account created successfully!")
+    # User(username, password, money).create_account()
 
 
 def login():
+    global market
     print("Login")
     username = input("Enter your username or (Q)uit: ")
     password = input("Enter your password: ")
-    if username in user_data.username:
-        if user_data.password == password:
-            print("Login successful!")
-            trade_menu()
-        else:
-            print("Incorrect password!")
+    # if username in user_data.username:
+    #     if user_data.password == password:
+    #         print("Login successful!")
+    #         trade_menu()
+    #     else:
+    #         print("Incorrect password!")
+    #         login()
+    # elif username.lower() == "quit" or username.lower() == "q":
+    #     main()
+    # elif username not in user_data.username:
+    #     print("Username does not exist!")
+    #     login()
+    try:
+        with open("user_data.json", "r") as user_file:
+            user_data = json.load(user_file)
+    except FileNotFoundError:
+        print("Pls create an account first!")
+        create_account()
+    else:
+        if username in user_data:
+            if user_data[username]["password"] == password:
+                print("Login successful!")
+                market = Market(user_data[username])
+                trade_menu()
+            else:
+                print("Incorrect password!")
+                login()
+        elif username.lower() == "quit" or username.lower() == "q":
+            main()
+        elif username not in user_data:
+            print("Username does not exist!")
             login()
-    elif username == "Q":
-        main()
-    elif username not in user_data.username:
-        print("Username does not exist!")
-        login()
 
 
 def trade_menu():
     print("Just HODL!!")
     print("1. Buy Stock")
     print("2. Sell Stock")
+    print("3. Trading stocks")
     print("3. View Portfolio")
     print("4. View Stock info")
     print("5. Logout")
@@ -51,17 +101,17 @@ def trade_menu():
     if choice == "1":
         ticker = input("Enter the ticker of the stock: ").upper()
         quantity = int(input("Enter the quantity of the stock: "))
-        Market.buy(ticker, quantity)
-        Market.view_portfolio()
+        market.buy(ticker, quantity)
+        market.view_portfolio()
         trade_menu()
     elif choice == "2":
         ticker = input("Enter the ticker of the stock: ").upper()
         quantity = int(input("Enter the quantity of the stock: "))
-        Market.sell(ticker, quantity)
-        Market.view_portfolio()
+        market.sell(ticker, quantity)
+        market.view_portfolio()
         trade_menu()
     elif choice == "3":
-        Market.view_portfolio()
+        market.view_portfolio()
         trade_menu()
     elif choice == "4":
         ticker = input("Enter the ticker of the stock: ").upper()
@@ -82,7 +132,6 @@ def main():
     choice = input("Enter your choice: ")
     if choice == "1":
         create_account()
-        main()
     elif choice == "2":
         login()
     elif choice == "3":
