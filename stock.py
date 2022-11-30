@@ -1,3 +1,5 @@
+import sys
+
 from bs4 import BeautifulSoup
 import requests
 
@@ -6,17 +8,23 @@ class Stock:
     def __init__(self, ticker):
         self.ticker = ticker
         url = f'https://finance.yahoo.com/quote/{ticker}?p={ticker}'
-        page = requests.get(url)
+        try:
+            page = requests.get(url)
+        except requests.exceptions.ConnectionError:
+            print("No internet connection")
+            sys.exit()
         self.__soup = BeautifulSoup(page.text, 'lxml')
-        self.__name = None
-        self.__price = None
-        self.__price_change = None
-        self.__info = None
+        self.__name = ""
+        self.__price = 0
+        self.__price_change = 0
+        self.__price_change_percent = 0
+        self.__info = ""
         if self.have_ticker():
             self.__name = self.__soup.find('h1', class_='D(ib) Fz(18px)').text
             self.__price = float(self.__soup.find('fin-streamer', class_='Fw(b) Fz(36px) Mb(-4px) D(ib)').text)
             self.__price_change = float(self.__soup.find('fin-streamer', class_='Fw(500) Pstart(8px) Fz(24px)')["value"])
             self.__info = self.__soup.find("p", class_="businessSummary Mt(10px) Ov(h) Tov(e)").text.split(" ")
+            self.__price_change_percent = float(self.__soup.find('fin-streamer', class_='Fw(500) Pstart(8px) Fz(24px)')["value"])
         # self.__name = self.__soup.find('h1', class_='D(ib) Fz(18px)').text
         # self.__price = float(self.__soup.find('fin-streamer', class_='Fw(b) Fz(36px) Mb(-4px) D(ib)').text)
         # self.__price_change = float(self.__soup.find('fin-streamer', class_='Fw(500) Pstart(8px) Fz(24px)')["value"])
@@ -31,6 +39,7 @@ class Stock:
             self.__price = float(self.__soup.find('fin-streamer', class_='Fw(b) Fz(36px) Mb(-4px) D(ib)').text)
             self.__price_change = float(
                 self.__soup.find('fin-streamer', class_='Fw(500) Pstart(8px) Fz(24px)')["value"])
+            self.__price_change_percent = self.__soup.findAll('fin-streamer', class_='Fw(500) Pstart(8px) Fz(24px)')[-1]["value"]
             self.__info = self.__soup.find("p", class_="businessSummary Mt(10px) Ov(h) Tov(e)").text.split(" ")
             return True
 
@@ -46,6 +55,10 @@ class Stock:
     def price_change(self):
         return float(self.__price_change)
 
+    @property
+    def price_change_percent(self):
+        return float(self.__price_change_percent)*100
+        # return self.__price_change_percent
     def info(self):
         lst2 = []
         for i in range(len(self.__info)):

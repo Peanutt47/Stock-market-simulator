@@ -54,9 +54,11 @@ class User:
             except FileNotFoundError:
                 with open("user_data.json", "w") as user_flie:
                     json.dump(new_account, user_flie, indent=4)
+                print("Account registered!")
             else:
                 user_data.update(new_account)
                 with open("user_data.json", "w") as user_flie:
                     json.dump(user_data, user_flie, indent=4)
+                print("Account registered!")
         else:
-            print("password must be 8 characters or more and not only numbers")
+            print("!!password must be 8 characters or more and not only numbers!!")
