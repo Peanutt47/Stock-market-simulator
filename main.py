@@ -115,7 +115,6 @@ def trending_tickers():
         json.dump(tem, tickers)
     with open("tickers.json", "r") as tickers:
         file = json.load(tickers)
-
     print(f"-" * 50, end="")
     print(f"-")
     print(f"|{'NO.':^5}|{'Ticker':^10}|{'Price':^10}|{'Change':^10}|{'% Change':^10}|")

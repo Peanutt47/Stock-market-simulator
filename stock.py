@@ -21,9 +21,12 @@ class Stock:
         self.__info = ""
         if self.have_ticker():
             self.__name = self.__soup.find('h1', class_='D(ib) Fz(18px)').text
-            self.__price = float(self.__soup.find('fin-streamer', class_='Fw(b) Fz(36px) Mb(-4px) D(ib)').text)
+            self.__price = float(self.__soup.find('fin-streamer', class_='Fw(b) Fz(36px) Mb(-4px) D(ib)').text.replace(",",""))
             self.__price_change = float(self.__soup.find('fin-streamer', class_='Fw(500) Pstart(8px) Fz(24px)')["value"])
-            self.__info = self.__soup.find("p", class_="businessSummary Mt(10px) Ov(h) Tov(e)").text.split(" ")
+            try:
+                self.__info = self.__soup.find("p", class_="businessSummary Mt(10px) Ov(h) Tov(e)").text.split(" ")
+            except AttributeError:
+                self.__info = "No company information"
             self.__price_change_percent = float(self.__soup.find('fin-streamer', class_='Fw(500) Pstart(8px) Fz(24px)')["value"])
         # self.__name = self.__soup.find('h1', class_='D(ib) Fz(18px)').text
         # self.__price = float(self.__soup.find('fin-streamer', class_='Fw(b) Fz(36px) Mb(-4px) D(ib)').text)
@@ -36,11 +39,14 @@ class Stock:
         except AttributeError:
             return False
         else:
-            self.__price = float(self.__soup.find('fin-streamer', class_='Fw(b) Fz(36px) Mb(-4px) D(ib)').text)
+            self.__price = float(self.__soup.find('fin-streamer', class_='Fw(b) Fz(36px) Mb(-4px) D(ib)').text.replace(",",""))
             self.__price_change = float(
                 self.__soup.find('fin-streamer', class_='Fw(500) Pstart(8px) Fz(24px)')["value"])
             self.__price_change_percent = self.__soup.findAll('fin-streamer', class_='Fw(500) Pstart(8px) Fz(24px)')[-1]["value"]
-            self.__info = self.__soup.find("p", class_="businessSummary Mt(10px) Ov(h) Tov(e)").text.split(" ")
+            try:
+                self.__info = self.__soup.find("p", class_="businessSummary Mt(10px) Ov(h) Tov(e)").text.split(" ")
+            except AttributeError:
+                self.__info = "No company information"
             return True
 
     @property
