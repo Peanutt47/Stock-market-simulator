@@ -6,163 +6,108 @@ import json
 from bs4 import BeautifulSoup
 import requests
 
-user_data = User("admin", "12345", 10000)
-market = Market("admin",user_data)
+user_data = User("admin", "admin1234", 10000)  # create default user_data object
+market = Market("admin", user_data)  # create a default market object
 
 
-def create_account():
-    global user_data
+def create_account():  # create account function
+    global user_data   # global variable
     print("Register Menu")
-    username = input("Enter your username or (Q)uit: ")
-    if username.lower() == "quit" or username.lower() == "q":
-        print(f"-"*42+f"\n")
+    username = input("Enter your username or (Q)uit: ")  # input username to register
+    if username.lower() == "quit" or username.lower() == "q":  # if user input quit or q, go back to main menu
+        print(f"-" * 42 + f"\n")
         main()
-    elif username == "":
+    elif username == "":  # if user input nothing, go back to main menu
         print("Username cannot be empty!")
-        print(f"-"*42+f"\n")
+        print(f"-" * 42 + f"\n")
         create_account()
-    password = input("Enter your password: ")
-    money = input("Enter your money: ")
-    if money == "":
+    password = input("Enter your password: ")  # input password to register
+    money = input("Enter your money: ")  # input money to register
+    if money == "":  # if user input nothing, set money to 10000
         money = 10000
-    try:
+    try:  # try to check user_data
         with open("user_data.json", "r") as user_flie:
             user_data = json.load(user_flie)
-    except FileNotFoundError:
+    except FileNotFoundError:  # if user_data not found, create a new user_data
         User(username, password, money).create_account()
-        print(f"-"*42+f"\n")
+        print(f"-" * 42 + f"\n")
         main()
-    else:
+    else:  # if user_data found, check if username already exist
         if username in user_data:
             print("Username already exists!")
             print(f"-" * 42 + f"\n")
             create_account()
         else:
             User(username, password, money).create_account()
-            print(f"-"*42+f"\n")
+            print(f"-" * 42 + f"\n")
             main()
-    # if username != user_data.username:
-    #     user_data = User(username, password, money)
-    # elif username == "Q":
-    #     main()
-    # elif username == user_data.username:
-    #     print("Username already exists")
-    #     create_account()
-    # print("Account created successfully!")
-    # User(username, password, money).create_account()
 
 
-def login():
-    global market
+def login():  # login function
+    global market  # global variable
     print("Login Menu")
-    username = input("Enter your username or (Q)uit: ")
-    if username.lower() == "quit" or username.lower() == "q":
-        print(f"-"*42+f"\n")
+    username = input("Enter your username or (Q)uit: ")  # input username to login
+    if username.lower() == "quit" or username.lower() == "q":  # if user input quit or q, go back to main menu
+        print(f"-" * 42 + f"\n")
         main()
-    password = input("Enter your password: ")
-    # if username in user_data.username:
-    #     if user_data.password == password:
-    #         print("Login successful!")
-    #         trade_menu()
-    #     else:
-    #         print("Incorrect password!")
-    #         login()
-    # elif username.lower() == "quit" or username.lower() == "q":
-    #     main()
-    # elif username not in user_data.username:
-    #     print("Username does not exist!")
-    #     login()
-    try:
+    password = input("Enter your password: ")  # input password to login
+    try:  # try to check have user_data or not
         with open("user_data.json", "r") as user_file:
             user_data = json.load(user_file)
-    except FileNotFoundError:
+    except FileNotFoundError:  # if user_data not found, return to create account
         print("Pls create an account first!")
         create_account()
-    else:
-        if username in user_data:
-            if user_data[username]["password"] == password:
+    else:  # if user_data found, check if username and password correct
+        if username in user_data:  # if username correct
+            if user_data[username]["password"] == password:  # if password correct
                 print("Login successful!")
-                # market = Market(User(username, password, user_data[username]["money"])) #error
                 tem = {}
-                for i,j in user_data[username]["stocks"].items():
-                    tem[i] = UserStock(i,j[i])
-                user_data[username]["stocks"] = tem
-                market = Market(username,user_data[username])
-                print(f"-"*42+f"\n")
+                for i, j in user_data[username]["stocks"].items():  # loop to get all stocks from json stored in object
+                    tem[i] = UserStock(i, j[i])
+                user_data[username]["stocks"] = tem  # save all stocks to user_data in term object
+                market = Market(username, user_data[username])  # create market object
+                print(f"-" * 42 + f"\n")
                 trade_menu()
-            else:
+            else:  # if password incorrect, return to login
                 print("Incorrect password!")
-                print(f"-"*42+f"\n")
+                print(f"-" * 42 + f"\n")
                 login()
-        elif username not in user_data:
+        elif username not in user_data:  # if username incorrect, return to login
             print("Username does not exist!")
-            print(f"-"*42+f"\n")
+            print(f"-" * 42 + f"\n")
             login()
 
 
-def trending_tickers():
-    url = "https://finance.yahoo.com/lookup"
-    r = requests.get(url)
-    soup = BeautifulSoup(r.text, "html.parser")
-    name = soup.findAll("td", {"class": "data-col0 Ta(start) Pstart(6px) Pend(15px)"})
-    price = soup.findAll("td", {"class": "data-col2 Ta(end) Pstart(20px)"})
-    change = soup.findAll("td", {"class": "data-col3 Ta(end) Pstart(20px)"})
-    percent = soup.findAll("td", {"class": "data-col4 Ta(start) Pstart(20px) Pend(6px) W(130px)"})
+def trending_tickers():  # trending tickers function
+    url = "https://finance.yahoo.com/lookup"  # url to get trending tickers
+    r = requests.get(url)  # get url
+    soup = BeautifulSoup(r.text, "html.parser")  # save all html code to soup
+    name = soup.findAll("td", {"class": "data-col0 Ta(start) Pstart(6px) Pend(15px)"})  # find name of trending tickers
+    price = soup.findAll("td", {"class": "data-col2 Ta(end) Pstart(20px)"})  # find price of trending tickers
+    change = soup.findAll("td", {"class": "data-col3 Ta(end) Pstart(20px)"})  # find change of trending tickers
+    percent = soup.findAll("td", {"class": "data-col4 Ta(start) Pstart(20px) Pend(6px) W(130px)"})  # find percent of
+    # trending tickers
     tem = {}
-    for i in range(len(name)):
+    for i in range(len(name)):  # loop to get all trending tickers
         tem[i + 1] = name[i].text, price[i].text, change[i].text, percent[i].text
-    with open("tickers.json", "w") as tickers:
+    with open("tickers.json", "w") as tickers:  # save trending tickers to tickers.json
         json.dump(tem, tickers)
-    with open("tickers.json", "r") as tickers:
+    with open("tickers.json", "r") as tickers:  # read tickers.json
         file = json.load(tickers)
     print(f"-" * 50, end="")
     print(f"-")
     print(f"|{'NO.':^5}|{'Ticker':^10}|{'Price':^10}|{'Change':^10}|{'% Change':^10}|")
     print(f"-" * 50, end="")
     print(f"-")
-    for i in range(len(file)):
+    for i in range(len(file)):  # loop to print all trending tickers
         print(
-            f"|{i + 1:^5}|{file[str(i + 1)][0]:^10}|{file[str(i + 1)][1]:^10}|{file[str(i + 1)][2]:^10}|{file[str(i + 1)][3]:^10}|")
+            f"|{i + 1:^5}|{file[str(i + 1)][0]:^10}|{file[str(i + 1)][1]:^10}|{file[str(i + 1)][2]:^10}|"
+            f"{file[str(i + 1)][3]:^10}|")
         print(f"-" * 50, end="")
         print(f"-")
-    # for i in range(len(x)):
-    #     tem[i + 1] = x[i].text
-    # with open("tickers.json", "w") as tickers:
-    #     json.dump(tem, tickers)
-    # with open("tickers.json", "r") as tickers:
-    #     tickers = json.load(tickers)
-    # # for i in range(len(file)):
-    # #     print(f"{i+1}. {file.readline()}")
-    # text = []
-    # print(f"-" * 48, end="")
-    # print(f"-")
-    # tem_text = ""
-    # r = 1
-    # for i in tickers:
-    #     if int(i) % 3 == 0:
-    #         tem_text += f"| {i}. {tickers[i]}"
-    #         if len(tem_text) < 48:
-    #             tem_text += " " * (48 - len(tem_text))
-    #         tem_text += "|"
-    #         text.append(tem_text)
-    #         text.append("-------------------------------------------------")
-    #         tem_text = ""
-    #         r = 1
-    #     elif r == 1:
-    #         tem_text += f"| {i}. {tickers[i]}"
-    #         if len(tem_text) < 16:
-    #             tem_text += " " * (16 - len(tem_text))
-    #         r += 1
-    #     elif r == 2:
-    #         tem_text += f"| {i}. {tickers[i]}"
-    #         if len(tem_text) < 32:
-    #             tem_text += " " * (32 - len(tem_text))
-    #         r += 1
-    # for i in text:
-    #     print(i)
 
 
-def trade_menu():
+def trade_menu():  # trade menu function
     print("Just HODL!!")
     print(f"{market.username} has ${market.user['money']}")
     print("1. Buy Stock")
@@ -171,155 +116,87 @@ def trade_menu():
     print("4. View Portfolio")
     print("5. View Stock info")
     print("6. Logout")
-    choice = input("Enter your choice: ")
-    if choice == "1":
-        ticker = input("Enter the ticker of the stock: ").upper()
-        if ticker == "":
+    choice = input("Enter your choice: ")  # input choice to trade
+    if choice == "1":  # if user input 1, go to buy stock function
+        ticker = input("Enter the ticker of the stock: ").upper()  # input ticker(upper) to buy
+        if ticker == "":  # if user input nothing, return to trade menu
             print("Invalid ticker")
-            print(f"-"*42+f"\n")
+            print(f"-" * 42 + f"\n")
             trade_menu()
-        quantity = input("Enter the quantity of the stock: ")
-        if quantity.isdigit():
+        quantity = input("Enter the quantity of the stock: ")  # input quantity to buy
+        if quantity.isdigit():  # if quantity is digit, go to buy stock function
             market.buy(ticker, int(quantity))
-            # market.view_portfolio()
-        else:
+        else:  # if quantity is not digit, return to trade menu
             print("Invalid quantity")
-            print(f"-"*42+f"\n")
+            print(f"-" * 42 + f"\n")
             trade_menu()
-        print(f"-"*42+f"\n")
+        print(f"-" * 42 + f"\n")
         trade_menu()
-    elif choice == "2":
+    elif choice == "2":  # if user input 2, go to sell stock function
         ticker = input("Enter the ticker of the stock: ").upper()
-        if ticker == "":
+        if ticker == "":  # if user input nothing, return to trade menu
             print("Invalid ticker")
-            print(f"-"*42+f"\n")
+            print(f"-" * 42 + f"\n")
             trade_menu()
         quantity = input("Enter the quantity of the stock: ")
-        if quantity.isdigit():
+        if quantity.isdigit():  # if quantity is digit, go to sell stock function
             market.sell(ticker, int(quantity))
-        else:
+        else:  # if quantity is not digit, return to trade menu
             print("Invalid quantity")
-            # market.view_portfolio()
-        print(f"-"*42+f"\n")
+        print(f"-" * 42 + f"\n")
         trade_menu()
-    elif choice == "3":
+    elif choice == "3":  # if user input 3, go to trending tickers function
         print()
         trending_tickers()
         trade_menu()
-    elif choice == "4":
+    elif choice == "4":  # if user input 4, go to view portfolio function
         market.view_portfolio()
         print(f"-" * 42 + f"\n")
         trade_menu()
-    elif choice == "5":
+    elif choice == "5":  # if user input 5, go to view stock info function
         ticker = input("Enter the ticker of the stock: ").upper()
-        if ticker == "":
+        if ticker == "":  # if user input nothing, return to trade menu
             print("Invalid ticker")
-            print(f"-"*42+f"\n")
+            print(f"-" * 42 + f"\n")
             trade_menu()
         stock = Stock(ticker)
-        if stock.have_ticker():
+        if stock.have_ticker():  # if ticker is valid, go to view stock info function
             print(f"Price: {stock.price}")
             print(f"Price Change: {stock.price_change}")
             print(f"Price Change Percentage: {stock.price_change_percent:.4f}%")
             stock.info()
-        else:
+        else:  # if ticker is not valid, return to trade menu
             print("Invalid ticker")
-        print(f"-"*42+f"\n")
+        print(f"-" * 42 + f"\n")
         trade_menu()
-    elif choice == "6":
-        print(f"-"*42+f"\n")
+    elif choice == "6":  # if user input 6, go to main menu function
+        print(f"-" * 42 + f"\n")
         main()
-    else:
+    else:  # if user input other than 1-6, return to trade menu
         print("Invalid choice")
-        print(f"-"*42+f"\n")
+        print(f"-" * 42 + f"\n")
         trade_menu()
 
 
-def main():
+def main():  # main menu function
     print("Welcome to the Stock Market Simulator!")
     print("1. Create Account")
     print("2. Login")
     print("3. Exit")
-    choice = input("Enter your choice: ")
-    if choice == "1":
-        print(f"-"*42+f"\n")
+    choice = input("Enter your choice: ")  # input choice to main menu
+    if choice == "1":  # if user input 1, go to create account function
+        print(f"-" * 42 + f"\n")
         create_account()
-    elif choice == "2":
-        print(f"-"*42+f"\n")
+    elif choice == "2":  # if user input 2, go to login function
+        print(f"-" * 42 + f"\n")
         login()
-    elif choice == "3":
+    elif choice == "3":  # if user input 3, exit the program
         exit()
-    else:
+    else:  # if user input other than 1-3, return to main menu
         print("Invalid choice")
-        print(+f"-"*42+f"\n")
+        print(f"-" * 42 + f"\n")
         main()
 
 
-main()
-# main()
-# while True:
-#     print("Welcome to the Stock Market Simulator!")
-#     print("1. Create Account")
-#     print("2. Login")
-#     print("3. Exit")
-#     choice = input("Enter your choice: ")
-#     if choice == "1":
-#         print("Creating Account")
-#         username = input("Enter your username: ")
-#         password = input("Enter your password: ")
-#         money = input("Enter your money: ")
-#         user_data[username] = User(username, password, money)
-#     elif choice == "2":
-#         print("Login")
-#         username = input("Enter your username: ")
-#         password = input("Enter your password: ")
-#         while True:
-#             print("1. Buy Stock")
-#             print("2. Sell Stock")
-#             print("3. View Portfolio")
-#             print("4. View Stock Market")
-#             print("5. Logout")
-#             choice = input("Enter your menu: ")
-#             if choice == "1":
-#                 print("Buy Stock")
-#                 ticker = input("Enter the ticker of the stock you want to buy: ")
-#                 quantity = input("Enter the quantity of the stock you want to buy: ")
-#                 stock = Stock(ticker)
-#                 if stock.price * int(quantity) > user_data[0].money:
-#                     print("You don't have enough money to buy this stock")
-#                 else:
-#                     user_data[0].money -= stock.price * int(quantity)
-#                     user_data[0].stocks[ticker] = quantity
-#                     print("You have successfully bought the stock")
-#             elif choice == "2":
-#                 print("Sell Stock")
-#                 print(User.stocks)
-#                 ticker = input("Enter the ticker of the stock you want to sell: ")
-#                 quantity = input("Enter the quantity of the stock you want to sell: ")
-#                 stock = Stock(ticker)
-#                 if ticker not in user_data[0].stocks:
-#                     print("You don't own this stock")
-#                 elif int(quantity) > user_data[0].stocks[ticker]:
-#                     print("You don't have enough of this stock to sell")
-#                 else:
-#                     user_data[0].money += stock.price * int(quantity)
-#                     user_data[0].stocks[ticker] -= int(quantity)
-#                     print("You have sold " + quantity + " of " + ticker)
-#             elif choice == "3":
-#                 print("View Portfolio")
-#                 print(f"Money: {user_data[0].money}")
-#                 print("Stocks:")
-#                 for ticker, quantity in user_data[0].stocks.items():
-#                     print(f"{ticker}: {quantity}")
-#             elif choice == "4":
-#                 print("View Stock Info")
-#                 ticker = input("Enter the ticker of the stock you want to view: ")
-#                 print(Stock(ticker))
-#             elif choice == "5":
-#                 print("Logout")
-#                 break
-#     elif choice == "3":
-#         print(f"GOODLUCK Trader!!!")
-#         break
-#     else:
-#         print("Invalid Choice")
+if __name__ == "__main__":
+    main()

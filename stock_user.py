@@ -1,5 +1,9 @@
 class UserStock:
     def __init__(self, ticker, quantity):
+        """
+        :param ticker: ticker of the stock
+        :param quantity: quantity of the stock
+        """
         self.ticker = ticker
         self.quantity = quantity
 
