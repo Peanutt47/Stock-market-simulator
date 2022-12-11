@@ -62,7 +62,7 @@ There are 4 main classes in this program:
 
 ## Program's Structure
 The program is divided into 5 main parts:
-* [`main.py`](main.py), the main program has the main menu and the login menu and communicate with the other classes.
+* [`main.py`](main.py), the main program has the main menu and the login menu and communicate with the other classes and save Top30 treding stock in [`ticker.json`](ticker.json)
 * [`user.py`](user.py), the user class that store the user's information and create the user's data in [`user_data.json`](user_data.json).
 * [`stock.py`](stock.py), the stock class that store the stock's information and check the stock's symbol.
 * [`market.py`](market.py), the market class that allow the user to buy and sell stocks and view the portfolio.
