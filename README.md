@@ -23,7 +23,7 @@ To run this program, you need to install the following libraries:
 * [`json`](https://docs.python.org/3/library/json.html?highlight=json#module-json), used for save data
 * [`requests`](https://docs.python.org/3/library/urllib.request.html?highlight=requests#module-urllib.request), used for get data from API
 * [`BeautifulSoup`](https://www.crummy.com/software/BeautifulSoup/bs4/doc/), used for web scraping from yahoo finance
-* `python` version 3.7 at least
+* [`python`](https://www.python.org/) version 3.7 at least
 
 ## How to run the program
 1. Clone this repository
