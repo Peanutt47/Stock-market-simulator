@@ -19,57 +19,29 @@ class Market:
         :param quantity: quantity of the stock
         this method will buy the stock and add it to the user's portfolio
         """
-        data_list = []  # list to store the data from the json file
-        ticker_t30 = {}  # dictionary to store the ticker TOP30
-        count = 1
-        with open("tickers.json", "r") as file:
-            data = json.load(file)
-            for i in data:
-                data_list.append(data[i])
-            for i in data_list:
-                ticker_t30[(i["ticker"])] = count
-                count += 1
-        if ticker in ticker_t30:  # if the ticker is in the top 30
-            stock = Stock(ticker)
-            if self.user["money"] - stock.price * quantity >= 0:  # check if the user has enough money
-                self.user["money"] -= stock.price * quantity
-                if ticker not in self.user["stocks"]:  # if the user doesn't own the stock
-                    self.user["stocks"][ticker] = UserStock(ticker, quantity)
-                else:  # if the user owns the stock
-                    self.user["stocks"][ticker].quantity += quantity
-                with open("user_data.json", "r") as user_d:
+        stock = Stock(ticker)
+        if stock.have_ticker():  # check if the stock is valid
+            if float(self.user["money"]) < int(stock.price) * int(quantity):  # check if the user has enough money
+                print("You don't have enough money to buy this stock!")
+            elif float(self.user["money"]) >= stock.price * int(quantity):  # if the user has enough money
+                self.user["money"] -= (stock.price * quantity)  # subtract the price of the stock from the user's money
+                if ticker in self.user["stocks"]:  # if the user already owns the stock
+                    self.user["stocks"][ticker] = UserStock(ticker, self.user["stocks"][ticker].quantity + quantity)
+                    # add the quantity to the user's stock
+                else:  # if the user doesn't own the stock
+                    self.user["stocks"][ticker] = UserStock(ticker, quantity)  # add the stock to the user's portfolio
+                with open("user_data.json", "r") as user_d:  # open the user data file
                     user_data = json.load(user_d)
                 user_data[self.username]["stocks"][ticker] = {
                     self.user["stocks"][ticker].ticker: self.user["stocks"][ticker].quantity}
-                user_data[self.username]["money"] = self.user["money"]
-                with open("user_data.json", "w") as user_d:
+                # add the stock to the user data file
+                user_data[self.username]["money"] = self.user["money"]  # add the user's money to the user data file
+                with open("user_data.json", "w") as user_d:  # open the user data file
                     json.dump(user_data, user_d, indent=4)
                 print("You have bought " + str(quantity) + " of " + ticker)
                 self.view_portfolio()
-            else:  # if the user doesn't have enough money
-                print("You don't have enough money to buy this stock!")
-
-        else:
-            stock = Stock(ticker)
-            if stock.have_ticker():  # if the ticker is valid
-                if float(self.user["money"]) < int(stock.price) * int(quantity):  # check if the user has enough money
-                    print("You don't have enough money to buy this stock!")
-                elif float(self.user["money"]) >= stock.price * int(quantity):  # if the user has enough money
-                    self.user["money"] -= (stock.price * quantity)  # subtract the price of the stock from the user's money
-                    if ticker in self.user["stocks"]:  # if the user already owns the stock
-                        self.user["stocks"][ticker] = UserStock(ticker, self.user["stocks"][ticker].quantity+quantity)
-                    else:  # if the user doesn't own the stock
-                        self.user["stocks"][ticker] = UserStock(ticker, quantity)
-                    with open("user_data.json", "r") as user_d:
-                        user_data = json.load(user_d)
-                    user_data[self.username]["stocks"][ticker] = {self.user["stocks"][ticker].ticker: self.user["stocks"][ticker].quantity}
-                    user_data[self.username]["money"] = self.user["money"]
-                    with open("user_data.json", "w") as user_d:
-                        json.dump(user_data, user_d, indent=4)
-                    print("You have bought " + str(quantity) + " of " + ticker)
-                    self.view_portfolio()
-            else:  # if the ticker is invalid
-                print("No ticker stock found!")
+        else:  # if the stock is invalid
+            print("No ticker stock found!")
 
     def sell(self, ticker, quantity=1):
         stock = Stock(ticker)
