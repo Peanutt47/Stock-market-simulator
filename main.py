@@ -161,9 +161,9 @@ def trade_menu():  # trade menu function
             trade_menu()
         stock = Stock(ticker)
         if stock.have_ticker():  # if ticker is valid, go to view stock info function
-            print(f"Price: {stock.price}")
-            print(f"Price Change: {stock.price_change}")
-            print(f"Price Change Percentage: {stock.price_change_percent:.4f}%")
+            print(f"Price: ${stock.price:.4f}")
+            print(f"Price Change: {stock.price_change:.4f}")
+            print(f"Price Change Percentage: {stock.price_change_percent:.4f} %")
             stock.info()
         else:  # if ticker is not valid, return to trade menu
             print("Invalid ticker")

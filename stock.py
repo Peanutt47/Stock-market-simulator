@@ -8,6 +8,11 @@ class Stock:
     def __init__(self, ticker):
         """
         :param ticker: ticker of the stock
+        :param soup: HTML soup of the stock
+        :param price: price of the stock
+        :param price_change: price change of the stock
+        :param price_change_percent: price change percent of the stock
+        :param info: info of the stock
         """
         self.ticker = ticker  # ticker of the stock
         url = f'https://finance.yahoo.com/quote/{ticker}?p={ticker}'  # url of the stock
@@ -24,13 +29,16 @@ class Stock:
         self.__info = ""  # info of the stock
         if self.have_ticker():  # if the ticker is valid
             self.__name = self.__soup.find('h1', class_='D(ib) Fz(18px)').text
-            self.__price = float(self.__soup.find('fin-streamer', class_='Fw(b) Fz(36px) Mb(-4px) D(ib)').text.replace(",",""))
-            self.__price_change = float(self.__soup.find('fin-streamer', class_='Fw(500) Pstart(8px) Fz(24px)')["value"])
+            self.__price = float(self.__soup.find('fin-streamer', class_='Fw(b) Fz(36px) Mb(-4px) D(ib)').text.replace
+                                 (",", ""))
+            self.__price_change = float(
+                self.__soup.find('fin-streamer', class_='Fw(500) Pstart(8px) Fz(24px)')["value"])
             try:  # try to get the info of the stock
                 self.__info = self.__soup.find("p", class_="businessSummary Mt(10px) Ov(h) Tov(e)").text.split(" ")
             except AttributeError:  # if there is no info
                 self.__info = "No company information"
-            self.__price_change_percent = float(self.__soup.find('fin-streamer', class_='Fw(500) Pstart(8px) Fz(24px)')["value"])
+            self.__price_change_percent = float(
+                self.__soup.find('fin-streamer', class_='Fw(500) Pstart(8px) Fz(24px)')["value"])
 
     def have_ticker(self):
         """
@@ -41,10 +49,12 @@ class Stock:
         except AttributeError:
             return False
         else:
-            self.__price = float(self.__soup.find('fin-streamer', class_='Fw(b) Fz(36px) Mb(-4px) D(ib)').text.replace(",",""))
+            self.__price = float(
+                self.__soup.find('fin-streamer', class_='Fw(b) Fz(36px) Mb(-4px) D(ib)').text.replace(",", ""))
             self.__price_change = float(
                 self.__soup.find('fin-streamer', class_='Fw(500) Pstart(8px) Fz(24px)')["value"])
-            self.__price_change_percent = self.__soup.findAll('fin-streamer', class_='Fw(500) Pstart(8px) Fz(24px)')[-1]["value"]
+            self.__price_change_percent = \
+                self.__soup.findAll('fin-streamer', class_='Fw(500) Pstart(8px) Fz(24px)')[-1]["value"]
             try:
                 self.__info = self.__soup.find("p", class_="businessSummary Mt(10px) Ov(h) Tov(e)").text.split(" ")
             except AttributeError:
@@ -65,7 +75,7 @@ class Stock:
 
     @property
     def price_change_percent(self):
-        return float(self.__price_change_percent)*100
+        return float(self.__price_change_percent) * 100
 
     def info(self):
         lst2 = []
